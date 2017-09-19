@@ -49,6 +49,7 @@ namespace libopencad
 
         bool Available() const;
         size_t GetOffset() const;
+        void SetOffset(size_t offset);
 
         double  ReadRawDouble();
         int64_t ReadRawLongLong();
@@ -66,7 +67,6 @@ namespace libopencad
         int16_t ReadBitShort();
 
         int32_t ReadMChar();
-        int32_t ReadUMChar();
         uint32_t ReadMShort();
         
         std::string ReadTv();
@@ -87,6 +87,8 @@ namespace libopencad
         void SeekHandle();
 
     private:
+        void ValidateOffset(size_t offset);
+        void SeekBitsImpl(size_t offset);
         ByteArray ReadBitsImpl(size_t bitsCount);
 
     private:

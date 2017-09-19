@@ -749,8 +749,8 @@ int DWGFileR2000::CreateFileMap()
 
         while((reader.GetOffset() / 8) < ((size_t)sectionSize - 2))
         {
-            tmpOffset.first  = reader.ReadUMChar();
-            tmpOffset.second = reader.ReadUMChar();
+            tmpOffset.first  = (uint32_t)reader.ReadMChar();
+            tmpOffset.second = (uint32_t)reader.ReadMChar();
 
             if (!recordsInSection)
                 previousObjHandleOffset = tmpOffset;
@@ -2544,7 +2544,7 @@ CADEntityObject * DWGFileR2000::getEntity(CADBitStreamReader& reader, int object
     entity->setSize(objectSize);
     entity->stCed = stCommonEntityData;
 
-    reader.SeekBits(entity->stCed.nObjectSizeInBits + 16);
+    reader.SetOffset(entity->stCed.nObjectSizeInBits + 16);
 
     fillCommonEntityHandleData(reader, entity);
 
