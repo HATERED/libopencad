@@ -54,9 +54,4 @@ if(BUILD_TESTS)
     target_link_extlibraries(io_test)
     add_test( io_test io_test )
 
-    add_executable(geometry_test
-                   reading_geometries.cpp)
-    target_link_extlibraries(geometry_test)
-    add_test( geometry_test geometry_test )
-
 endif()

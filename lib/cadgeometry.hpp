@@ -2,13 +2,11 @@
  *  Project: libopencad
  *  Purpose: OpenSource CAD formats support library
  *  Author: Alexandr Borzykh, mush3d at gmail.com
- *  Author: Dmitry Baryshnikov, bishop.dev@gmail.com
  *  Language: C++
  *******************************************************************************
  *  The MIT License (MIT)
  *
- *  Copyright (c) 2016 Alexandr Borzykh
- *  Copyright (c) 2016 NextGIS, <info@nextgis.com>
+ *  Copyright (c) 2017 Alexandr Borzykh
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -28,61 +26,20 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
  *******************************************************************************/
-#ifndef CADTABLES_H
-#define CADTABLES_H
+#ifndef LIBOPENCAD_CADGEOMETRY_HPP
+#define LIBOPENCAD_CADGEOMETRY_HPP
 
-#include "cadheader.h"
-#include "cadlayer.h"
+#include "internal/toolkit.hpp"
 
-using namespace std;
-
-class CADFile;
-
-/**
- * @brief The CAD tables class. Store tables
- */
-class OCAD_EXTERN CADTables
+namespace libopencad
 {
-public:
-    /**
-     * @brief The CAD table types enum
-     */
-    enum TableType
+
+    class CADGeometry
     {
-        CurrentViewportTable,
-        BlocksTable,
-        LayersTable,
-        StyleTable,
-        LineTypesTable,
-        ViewTable,
-        UCSTable,
-        ViewportTable,
-        APPIDTable,
-        EntityTable,
-        ACADGroupDict,
-        ACADMLineStyleDict,
-        NamedObjectsDict,
-        LayoutsDict,
-        PlotSettingsDict,
-        PlotStylesDict,
-        BlockRecordPaperSpace,
-        BlockRecordModelSpace
+
     };
-public:
-    CADTables();
+    DECLARE_PTR(CADGeometry);
 
-    void      AddTable( enum TableType eType, CADHandle hHandle );
-    CADHandle GetTableHandle( enum TableType eType );
-    int       ReadTable( CADFile * const pCADFile, enum TableType eType );
-    size_t    GetLayerCount() const;
-    CADLayer& GetLayer( size_t iIndex );
+}
 
-protected:
-    int  ReadLayersTable( CADFile * const pCADFile, long dLayerControlHandle );
-    void FillLayer( const CADEntityObject * pEntityObject );
-protected:
-    map<enum TableType, CADHandle> mapTables;
-    vector<CADLayer>               aLayers;
-};
-
-#endif // CADTABLES_H
+#endif

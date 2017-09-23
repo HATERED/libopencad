@@ -2,13 +2,11 @@
  *  Project: libopencad
  *  Purpose: OpenSource CAD formats support library
  *  Author: Alexandr Borzykh, mush3d at gmail.com
- *  Author: Dmitry Baryshnikov, bishop.dev@gmail.com
  *  Language: C++
  *******************************************************************************
  *  The MIT License (MIT)
  *
- *  Copyright (c) 2016 Alexandr Borzykh
- *  Copyright (c) 2016 NextGIS, <info@nextgis.com>
+ *  Copyright (c) 2016-2017 Alexandr Borzykh
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -28,71 +26,33 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
  *******************************************************************************/
+#ifndef LIBOPENCAD_INTERNAL_TOOLKIT_HPP
+#define LIBOPENCAD_INTERNAL_TOOLKIT_HPP
 
-#include "caddictionary.h"
-
-//
-// CADDictionaryRecord
-//
-
-CADDictionaryRecord::CADDictionaryRecord()
+/*
+ * Method taken from here: http://stackoverflow.com/a/2611850
+ * Purpose: no C++14 dependencies in library
+ */
+template< unsigned long N >
+struct bin
 {
-
-}
-
-CADObject::ObjectType CADDictionaryRecord::getType() const
-{
-    return objType;
-}
-
-//
-// CADXRecord
-//
-
-CADXRecord::CADXRecord()
-{
-    objType = CADObject::XRECORD;
-}
-
-const string& CADXRecord::getRecordData() const
-{
-    return sRecordData;
-}
-
-void CADXRecord::setRecordData( const string& data )
-{
-    sRecordData = data;
-}
-
-//
-// CADDictionary
-//
-
-CADDictionary::CADDictionary()
-{
-    objType = CADObject::DICTIONARY;
-}
-
-CADDictionary::~CADDictionary()
-{
-    for( size_t i = 0; i < astXRecords.size(); ++i )
+    enum
     {
-        if( astXRecords[i].second != nullptr )
-            delete ( astXRecords[i].second );
-    }
-}
+        value = ( N % 8 ) + ( bin< N / 8 >::value << 1 )
+    };
+};
 
-size_t CADDictionary::getRecordsCount()
+template<>
+struct bin< 0 >
 {
-    return astXRecords.size();
-}
+    enum
+    {
+        value = 0
+    };
+};
+#define binary( n ) bin<0##n>::value
 
-pair<string, CADDictionaryRecord *>& CADDictionary::getRecord( size_t index )
-{
-    return astXRecords[index];
-}
+#define DECLARE_SMART_PTR(ClassName) \
+    using std::shared_ptr<ClassName> = ClassName##Ptr;
 
-void CADDictionary::addRecord( pair<string, CADDictionaryRecord *> record )
-{
-    astXRecords.emplace_back( record );
-}
+#endif

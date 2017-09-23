@@ -2,13 +2,11 @@
  *  Project: libopencad
  *  Purpose: OpenSource CAD formats support library
  *  Author: Alexandr Borzykh, mush3d at gmail.com
- *  Author: Dmitry Baryshnikov, bishop.dev@gmail.com
  *  Language: C++
  *******************************************************************************
  *  The MIT License (MIT)
  *
- *  Copyright (c) 2016 Alexandr Borzykh
- *  Copyright (c) 2016 NextGIS, <info@nextgis.com>
+ *  Copyright (c) 2017 Alexandr Borzykh
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -27,33 +25,41 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
- ******************************************************************************/
-#include "cadfileio.h"
+ *******************************************************************************/
+#ifndef LIBOPENCAD_INTERNAL_IO_CADFILEIO_HPP
+#define LIBOPENCAD_INTERNAL_IO_CADFILEIO_HPP
 
-CADFileIO::CADFileIO( const char * pszFileName )
+#include <cstdint>
+#include <vector>
+
+using ByteArray = std::vector<uint8_t>;
+
+namespace libopencad
 {
-    m_soFilePath = pszFileName;
-    m_bIsOpened  = false;
+
+    struct ICADFileIO
+    {
+    public:
+        enum class SeekOrigin
+        {
+            BEG,
+            CUR,
+            END
+        };
+
+    public:
+        virtual ~ICADFileIO();
+
+        virtual size_t Read(size_t bytesCount) = 0;
+        virtual size_t Write(const ByteArray& data) = 0;
+        virtual size_t Seek(int64_t offset, SeekOrigin origin) = 0;
+        virtual size_t Tell() const = 0;
+
+        virtual bool Eof() const = 0;
+        virtual bool IsOpened() const = 0;
+
+    };
+
 }
 
-CADFileIO::~CADFileIO()
-{
-    if( IsOpened() )
-        Close();
-}
-
-bool CADFileIO::IsOpened() const
-{
-    return m_bIsOpened;
-}
-
-bool CADFileIO::Close()
-{
-    m_bIsOpened = false;
-    return true;
-}
-
-const char * CADFileIO::GetFilePath() const
-{
-    return m_soFilePath.c_str();
-}
+#endif
