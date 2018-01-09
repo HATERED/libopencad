@@ -6,7 +6,7 @@
  *******************************************************************************
  *  The MIT License (MIT)
  *
- *  Copyright (c) 2016-2017 Alexandr Borzykh
+ *  Copyright (c) 2017 Alexandr Borzykh
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -26,33 +26,36 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
  *******************************************************************************/
-#ifndef LIBOPENCAD_INTERNAL_TOOLKIT_HPP
-#define LIBOPENCAD_INTERNAL_TOOLKIT_HPP
+#ifndef LIBOPENCAD_INTERNAL_IO_DEFAULTCADFILEIO_HPP
+#define LIBOPENCAD_INTERNAL_IO_DEFAULTCADFILEIO_HPP
 
-/*
- * Method taken from here: http://stackoverflow.com/a/2611850
- * Purpose: no C++14 dependencies in library
- */
-template< unsigned long N >
-struct bin
+#include "cadfileio.hpp"
+
+#include <fstream>
+
+namespace libopencad
 {
-    enum
-    {
-        value = ( N % 8 ) + ( bin< N / 8 >::value << 1 )
-    };
-};
 
-template<>
-struct bin< 0 >
-{
-    enum
+    class DefaultCADFileIO : public ICADFileIO
     {
-        value = 0
-    };
-};
-#define binary( n ) bin<0##n>::value
+    public:
+        DefaultCADFileIO(const std::string& path);
 
-#define DECLARE_SMART_PTR(ClassName) \
-    using std::shared_ptr<ClassName> = ClassName##Ptr;
+        virtual ByteArray Read(size_t bytesCount);
+        virtual size_t Write(const ByteArray& data);
+        virtual size_t Seek(int64_t offset, SeekOrigin origin);
+
+        virtual size_t Tell() const
+        { return _fileStream.tellg(); }
+
+        virtual bool Eof() const
+        { return _fileStream.eof(); }
+
+        virtual bool IsOpened() const
+        { return _fileStream.is_open(); }
+    private:
+        std::fstream        _fileStream;
+    };
+}
 
 #endif

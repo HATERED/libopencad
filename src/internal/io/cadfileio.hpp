@@ -26,36 +26,40 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
  *******************************************************************************/
-#ifndef LIBOPENCAD_INTERNAL_IO_DEFAULTCADFILEIO_HPP
-#define LIBOPENCAD_INTERNAL_IO_DEFAULTCADFILEIO_HPP
+#ifndef LIBOPENCAD_INTERNAL_IO_CADFILEIO_HPP
+#define LIBOPENCAD_INTERNAL_IO_CADFILEIO_HPP
 
-#include "cadfileio.hpp"
+#include <cstdint>
+#include <vector>
 
-#include <fstream>
+using ByteArray = std::vector<uint8_t>;
 
 namespace libopencad
 {
 
-    class DefaultCADFileIO : public ICADFileIO
+    struct ICADFileIO
     {
     public:
-        DefaultCADFileIO(const std::string& path);
-        
-        virtual ByteArray Read(size_t bytesCount);
-        virtual size_t Write(const ByteArray& data);
-        virtual size_t Seek(int64_t offset, SeekOrigin origin);
+        enum class SeekOrigin
+        {
+            BEG,
+            CUR,
+            END
+        };
 
-        virtual size_t Tell() const
-        { return _fileStream.tellg(); }
+    public:
+        virtual ~ICADFileIO();
 
-        virtual bool Eof() const
-        { return _fileStream.eof(); }
+        virtual size_t Read(size_t bytesCount) = 0;
+        virtual size_t Write(const ByteArray& data) = 0;
+        virtual size_t Seek(int64_t offset, SeekOrigin origin) = 0;
+        virtual size_t Tell() const = 0;
 
-        virtual bool IsOpened() const
-        { return _fileStream.is_open(); }
-    private:
-        std::fstream        _fileStream;
+        virtual bool Eof() const = 0;
+        virtual bool IsOpened() const = 0;
+
     };
+
 }
 
 #endif

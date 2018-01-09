@@ -6,7 +6,7 @@
  *******************************************************************************
  *  The MIT License (MIT)
  *
- *  Copyright (c) 2017 Alexandr Borzykh
+ *  Copyright (c) 2016-2017 Alexandr Borzykh
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -26,40 +26,33 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
  *******************************************************************************/
-#ifndef LIBOPENCAD_INTERNAL_IO_CADFILEIO_HPP
-#define LIBOPENCAD_INTERNAL_IO_CADFILEIO_HPP
+#ifndef LIBOPENCAD_INTERNAL_TOOLKIT_HPP
+#define LIBOPENCAD_INTERNAL_TOOLKIT_HPP
 
-#include <cstdint>
-#include <vector>
-
-using ByteArray = std::vector<uint8_t>;
-
-namespace libopencad
+/*
+ * Method taken from here: http://stackoverflow.com/a/2611850
+ * Purpose: no C++14 dependencies in library
+ */
+template< unsigned long N >
+struct bin
 {
-
-    struct ICADFileIO
+    enum
     {
-    public:
-        enum class SeekOrigin
-        {
-            BEG,
-            CUR,
-            END
-        };
-
-    public:
-        virtual ~ICADFileIO();
-
-        virtual size_t Read(size_t bytesCount) = 0;
-        virtual size_t Write(const ByteArray& data) = 0;
-        virtual size_t Seek(int64_t offset, SeekOrigin origin) = 0;
-        virtual size_t Tell() const = 0;
-
-        virtual bool Eof() const = 0;
-        virtual bool IsOpened() const = 0;
-
+        value = ( N % 8 ) + ( bin< N / 8 >::value << 1 )
     };
+};
 
-}
+template<>
+struct bin< 0 >
+{
+    enum
+    {
+        value = 0
+    };
+};
+#define binary( n ) bin<0##n>::value
+
+#define DECLARE_PTR(ClassName) \
+    using std::shared_ptr<ClassName> = ClassName##Ptr;
 
 #endif
